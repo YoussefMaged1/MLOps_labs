@@ -1,5 +1,5 @@
 # Data
-# /data/
+/data/
 
 # Mac OS-specific storage files
 .DS_Store
@@ -89,6 +89,7 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+*.ipynb
 
 # IPython
 profile_default/
@@ -184,3 +185,15 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# pickle files of the model
+*.pickle
+*.pkl
+
+# training pipeline artifacts of evaluation
+reports/*/*.json
+reports/*/*.csv
+reports/*/*.png
+reports/*/*.pdf
+reports/*/*.html
+reports/*/*.txt
