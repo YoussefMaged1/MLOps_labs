@@ -1,6 +1,6 @@
-import sys
 from datetime import datetime
 from pathlib import Path
+import sys
 from typing import Optional
 
 from loguru import logger
@@ -33,7 +33,9 @@ class ExecutorLogger:
 
         if logs_path:
             self.logger.add(
-                Path("logs")/ Path(logs_path) / f"logs_{datetime.now().strftime('%Y%m%d')}.log",
+                Path("logs")
+                / Path(logs_path)
+                / f"logs_{datetime.now().strftime('%Y%m%d')}.log",
                 level=level,
                 format=self._get_file_format(),
                 rotation="10 MB",

@@ -1,25 +1,17 @@
 from src.logger import ExecutorLogger
+from src.training.evaluate import evaluate
 from src.training.process_data import read_process_data
 from src.training.train import encode_target_col, trainer
-from src.training.evaluate import evaluate
+
 
 def main(logger) -> None:
     logger.info("Training started")
-    read_process_data(
-        "Iris",
-        "Id",
-        "Species",
-        logger
-    )
-    X, y, X_test, y_test = encode_target_col(
-        "Iris",
-        "Species",
-        "fake",
-        logger
-    )
+    read_process_data("Iris", "Id", "Species", logger)
+    X, y, X_test, y_test = encode_target_col("Iris", "Species", "fake", logger)
     trainer(X, y, "fake", logger)
     evaluate(X_test, y_test, "fake", logger)
     logger.info("Training finished")
+
 
 if __name__ == "__main__":
     logger = ExecutorLogger("training")

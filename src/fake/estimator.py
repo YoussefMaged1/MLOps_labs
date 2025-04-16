@@ -1,12 +1,13 @@
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
-from sklearn.utils.validation import validate_data, check_is_fitted
 from sklearn.utils.multiclass import unique_labels
+from sklearn.utils.validation import check_is_fitted, validate_data
+
 
 class FakeEstimator(BaseEstimator, ClassifierMixin):
     def __init__(self, random_state: int = 42) -> None:
         self.random_state = random_state
-    
+
     def fit(self, X, y):
         # Check that X and y have correct shape, set n_features_in_, etc.
         X, y = validate_data(self, X, y)

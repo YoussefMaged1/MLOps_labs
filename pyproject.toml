@@ -52,6 +52,10 @@ dev = [
     "ipywidgets>=8.1.6",
     "kagglehub>=0.3.11",
 ]
+linting = [
+    "black>=25.1.0",
+    "isort>=6.0.1",
+]
 optional = [
     "hydra-colorlog>=1.2.0",
     "wandb~=0.19.6",
