@@ -13,11 +13,11 @@ This project demonstrates a complete end-to-end machine learning pipeline using 
 ## Prerequisites
 
 - Python 3.11+
-- Poetry (for dependency management)
+- uv (for dependency management)
 
 Install dependencies:
 ```bash
-poetry install
+uv sync
 ```
 
 ## Project Structure
@@ -43,8 +43,8 @@ ITI-MLOps/
 │   │   └── model_evaluate.py # Model evaluation
 │   └── logger.py             # Logging utilities
 ├── main.py                   # Entry point for training pipeline
-├── pyproject.toml            # Project configuration (Poetry)
-├── poetry.lock               # Locked dependencies
+├── pyproject.toml            # Project configuration (uv)
+├── uv.lock                   # Locked dependencies
 └── Makefile                  # Convenience commands
 ```
 
@@ -57,7 +57,7 @@ ITI-MLOps/
 | **W&B** | Experiment tracking & visualization |
 | **DagsHub** | ML metadata management |
 | **scikit-learn** | Machine learning models |
-| **Poetry** | Python dependency management |
+| **uv** | Python dependency management |
 
 ## Quick Start
 
