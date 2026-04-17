@@ -8,7 +8,7 @@ Complete MLOps Pipeline for ML Practitioners - An educational project for the IT
 
 ## Overview
 
-This project demonstrates a complete end-to-end machine learning pipeline using industry-standard tools. It includes data versioning with DVC, configuration management with Hydra, experiment tracking with Weights & Biases (W&B), and model versioning.
+This project demonstrates a complete end-to-end machine learning pipeline. It includes data download from Kaggle, data processing with train/test splits, hyperparameter optimization with Hyperopt, and model evaluation with skore.
 
 ## Prerequisites
 
@@ -24,7 +24,7 @@ uv sync
 
 ```
 ITI-MLOps/
-├── conf/                     # Hydra configuration files
+├── conf/                     # Configuration files (placeholder)
 ├── data/                     # Data directory
 │   ├── external/             # Third-party data
 │   ├── interim/              # Intermediate transformed data
@@ -36,13 +36,14 @@ ITI-MLOps/
 ├── references/               # Data dictionaries and manuals
 ├── reports/                  # Generated analysis (HTML, PDF, etc.)
 ├── src/                      # Source code
-│   ├── fake/                 # Fake data generators
+│   ├── fake/                 # Custom estimators
 │   ├── training/             # Training pipeline modules
-│   │   ├── process_data.py   # Data preprocessing
-│   │   ├── data_training.py # Model training
-│   │   └── model_evaluate.py # Model evaluation
+│   │   ├── download_data.py  # Data download (Kaggle)
+│   │   ├── process_data.py   # Data preprocessing & split
+│   │   ├── train.py          # Model training & hyperopt
+│   │   └── evaluate.py       # Model evaluation
 │   └── logger.py             # Logging utilities
-├── main.py                   # Entry point for training pipeline
+├── trainer.py                # Entry point for training pipeline
 ├── pyproject.toml            # Project configuration (uv)
 ├── uv.lock                   # Locked dependencies
 └── Makefile                  # Convenience commands
@@ -52,32 +53,35 @@ ITI-MLOps/
 
 | Tool | Purpose |
 |------|---------|
-| **DVC** | Data version control |
-| **Hydra** | Configuration management |
-| **W&B** | Experiment tracking & visualization |
-| **DagsHub** | ML metadata management |
+| **W&B** | Experiment tracking & visualization (optional) |
 | **scikit-learn** | Machine learning models |
+| **Hyperopt** | Bayesian hyperparameter optimization |
+| **kagglehub** | Kaggle dataset download |
+| **skore** | Model evaluation & reporting |
 | **uv** | Python dependency management |
 
 ## Quick Start
 
 ### 1. Data Preparation
 
-Place your raw data in `data/raw/` directory. The pipeline expects a CSV file:
+The pipeline automatically downloads the Iris dataset from Kaggle. To use a different dataset:
+
 ```bash
-cp your_data.csv data/raw/Titanic.csv
+cp your_data.csv data/raw/your_dataset.csv
 ```
+Then update the dataset name in `trainer.py`.
 
 ### 2. Run the Pipeline
 
 ```bash
-python main.py
+python trainer.py
 ```
 
 This will:
-1. **Process data** - Load raw data, handle missing values, encode features
-2. **Train model** - Train a RandomForest classifier
-3. **Evaluate** - Output model performance metrics
+1. **Download data** - Fetch Iris dataset from Kaggle
+2. **Process data** - Split data into train/test sets
+3. **Train model** - Run hyperparameter optimization with Hyperopt
+4. **Evaluate** - Output model performance metrics
 
 ### 3. View Logs
 
@@ -85,54 +89,32 @@ Logs are stored in `logs/` directory with timestamps.
 
 ## Pipeline Details
 
-### Data Processing (`src/training/process_data.py`)
+The pipeline is orchestrated by `trainer.py` and consists of four stages:
 
+### 1. Data Download (`src/training/download_data.py`)
+- Downloads Iris dataset from Kaggle using `kagglehub`
+- Saves raw data to `data/raw/Iris.csv`
+
+### 2. Data Processing (`src/training/process_data.py`)
 - Loads raw CSV data
-- Handles missing values (mean for numerical, mode for categorical)
-- Creates preprocessing pipeline (StandardScaler + OneHotEncoder)
-- Saves processed data as Parquet files
-- Persists preprocessor for inference
+- Splits data into train/test (85%/15%) with stratification
+- Saves processed data as Parquet files in `data/processed/`
 
-### Model Training (`src/training/data_training.py`)
+### 3. Model Training (`src/training/train.py`)
+- Reads Parquet files and extracts features/target
+- Creates label encoder/decoder for target variable
+- Uses Hyperopt for Bayesian hyperparameter optimization
+- Trains final model with optimal parameters
+- Saves model to `models/fake/final_model.pkl`
 
-- Reads processed Parquet files
-- Extracts features and target
-- Trains RandomForest classifier
-- Saves model to `models/random_forest_model.pkl`
-
-### Model Evaluation (`src/training/model_evaluate.py`)
-
+### 4. Model Evaluation (`src/training/evaluate.py`)
 - Loads trained model and test data
-- Computes accuracy and classification report
-
-## Configuration
-
-Project uses Hydra for configuration. Add config files in `conf/` directory:
-
-```yaml
-# conf/config.yaml
-model:
-  n_estimators: 100
-  max_depth: 10
-  
-data:
-  file_name: Titanic
-  id_col: PassengerId
-  target_col: Survived
-```
-
-## Using DVC for Data Versioning
-
-```bash
-dvc init
-dvc remote add -d myremote s3://your-bucket/path
-dvc add data/raw/Titanic.csv
-dvc push
-```
+- Computes metrics (accuracy, precision, recall)
+- Saves evaluation report as JSON in `reports/fake/evaluation_report.json`
 
 ## Using W&B for Experiment Tracking
 
-The project includes a W&B tutorial notebook:
+The project can integrate with W&B for experiment tracking:
 ```bash
 jupyter lab notebooks/wandb101.ipynb
 ```
@@ -140,18 +122,19 @@ jupyter lab notebooks/wandb101.ipynb
 ## Available Make Commands
 
 ```bash
-make data      # Download/generate data
-make train     # Run training
-make evaluate  # Evaluate model
-make setup     # Setup project
+make help       # Show available commands
+make requirements  # Install Python dependencies
+make lint       # Run linting checks
+make format     # Format code
+make clean      # Clean compiled Python files
 ```
 
 ## Extending the Project
 
 1. **Add new data sources**: Place in `data/external/`
 2. **Add new features**: Modify `src/training/process_data.py`
-3. **Add new models**: Add to `src/training/` directory
-4. **Add experiments**: Use Hydra configs in `conf/`
+3. **Add new models**: Add to `src/training/` or `src/fake/` directory
+4. **Add experiments**: Use configs in `conf/`
 
 ## License
 
