@@ -1,27 +1,39 @@
 import os
-import kagglehub
-import shutil
+import zipfile
+import logging
+from kaggle.api.kaggle_api_extended import KaggleApi
 
 RAW_DATA_DIR = os.path.join("data", "raw")
 
+def download_titanic(logger) -> str:
+    logger.info("Initializing Kaggle API and authenticating...")
+    
+    api = KaggleApi()
+    api.authenticate()
 
-def download_iris_data(logger) -> str:
-    logger.info("Downloading Iris dataset from Kaggle...")
-
-    path = kagglehub.dataset_download("uciml/iris")
-
-    files = os.listdir(path)
-    csv_files = [f for f in files if f.endswith(".csv")]
-
-    if not csv_files:
-        csv_files = files
-
+    competition_name = 'titanic'
     os.makedirs(RAW_DATA_DIR, exist_ok=True)
+    
+    logger.info(f"Downloading files for competition: {competition_name}")
+    api.competition_download_files(competition_name, path=RAW_DATA_DIR)
 
-    destination = os.path.join(RAW_DATA_DIR, "Iris.csv")
-    source_file = os.path.join(path, csv_files[0])
+    zip_file_path = os.path.join(RAW_DATA_DIR, f'{competition_name}.zip')
+    test_file_path = os.path.join(RAW_DATA_DIR, 'test.csv')
+    sub_file_path = os.path.join(RAW_DATA_DIR, 'gender_submission.csv')
+    if os.path.exists(zip_file_path):
+        logger.info(f"Extracting {zip_file_path}...")
+        with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+            zip_ref.extractall(RAW_DATA_DIR)
+        logger.info(f"Files extracted successfully to {RAW_DATA_DIR}")
+        os.remove(zip_file_path)
+        os.remove(test_file_path)
+        os.remove(sub_file_path)
+    else:
+        logger.error("Download failed or zip file not found!")
 
-    shutil.copy(source_file, destination)
+    return RAW_DATA_DIR
 
-    logger.info(f"Iris dataset downloaded to {destination}")
-    return destination
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+    download_titanic(logger)
