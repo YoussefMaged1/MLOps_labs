@@ -15,20 +15,21 @@ SOURCE = os.path.join("data", "processed")
 MODEL_PATH = "models"
 N_FOLDS = 5
 MAX_EVALS = 4
-SPACE = {
-    "xgb": {
-        "n_estimators": hp.choice("xgb_n_estimators", [100, 200, 300, 500, 1000]),
-        "learning_rate": hp.choice("xgb_lr", [0.01, 0.05, 0.1]),
-        "max_depth": hp.choice("xgb_max_depth", [3, 5, 7, 10]),
-        "subsample": hp.choice("xgb_subsample", [0.8, 1.0]),
-    },
-    "cat": {
-        "depth": hp.choice("cat_depth", [4, 6, 8, 10]),
-        "learning_rate": hp.choice("cat_lr", [0.01, 0.05, 0.1]),
-        "iterations": hp.choice("cat_iterations", [500, 1000]),
-        "l2_leaf_reg": hp.choice("cat_l2", [1, 3, 5, 7]),
-    },
-}
+def get_space(hyper_cfg):
+    return {
+        'xgb': {
+            'n_estimators': hp.choice('xgb_n_estimators', list(hyper_cfg.xgb.n_estimators)),
+            'learning_rate': hp.choice('xgb_lr', list(hyper_cfg.xgb.learning_rate)),
+            'max_depth': hp.choice('xgb_max_depth', list(hyper_cfg.xgb.max_depth)),
+            'subsample': hp.choice('xgb_subsample', list(hyper_cfg.xgb.subsample)),
+        },
+        'cat': {
+            'depth': hp.choice('cat_depth', list(hyper_cfg.cat.depth)),
+            'learning_rate': hp.choice('cat_lr', list(hyper_cfg.cat.learning_rate)),
+            'iterations': hp.choice('cat_iterations', list(hyper_cfg.cat.iterations)),
+            'l2_leaf_reg': hp.choice('cat_l2', list(hyper_cfg.cat.l2_leaf_reg)),
+        }
+    }
 
 
 def encode_target_col(
@@ -84,7 +85,7 @@ def objective(params: Dict[str, Any], X, y, n_folds: int = N_FOLDS) -> Dict[str,
     }
 
 
-def trainer(X, y, model_name: str, logger) -> None:
+def trainer(cfg, X, y, model_name: str, logger) -> None:
     logger.info("Load encoder/decoder of target variable")
     with open(
         os.path.join(MODEL_PATH, model_name, "model_target_translator.pkl"),
@@ -95,11 +96,14 @@ def trainer(X, y, model_name: str, logger) -> None:
     bayes_trials = Trials()
     fmin_objective = partial(objective, X=X, y=y_train_enc)
     logger.info("optimization started")
+
+    space = get_space(cfg.hyperparams) 
+
     fmin(
         fn=fmin_objective,
-        space=SPACE,
+        space=space,  
         algo=tpe.suggest,
-        max_evals=MAX_EVALS,
+        max_evals=cfg.hyperparams.max_evals, 
         trials=bayes_trials,
     )
     logger.info("optimization completed")
