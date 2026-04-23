@@ -7,20 +7,20 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 
-SOURCE = os.path.join("data", "raw")
-DESTINATION = os.path.join("data", "processed")
-
-
 def read_process_data(
+    config,
     file_name: str,
     id_col: str,
     target_col: str,
     logger,
 ) -> None:
     logger.info("Data Processing started")
-    df = pd.read_csv(os.path.join(SOURCE, f"{file_name}.csv"))
-    df["Pclass"] = df["Pclass"].astype(str)
+    SOURCE = config.data.raw_dir
+    DESTINATION = config.data.processed_dir
 
+    df = pd.read_csv(os.path.join(SOURCE, f"{file_name}.csv")) 
+    df["Pclass"] = df["Pclass"].astype(str)
+    
     X = df.drop([target_col, id_col, "Name", "Ticket", "Cabin"], axis=1)
     y = df[target_col]
 
@@ -60,7 +60,7 @@ def read_process_data(
     val_df[target_col] = y_val.values
 
     train_df.to_parquet(
-        os.path.join(DESTINATION, f"{file_name}-train.parquet"), engine="pyarrow"
+        os.path.join(DESTINATION, f"{file_name}-train.parquet")
     )
     val_df.to_parquet(
         os.path.join(DESTINATION, f"{file_name}-test.parquet"), engine="pyarrow"
