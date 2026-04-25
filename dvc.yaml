@@ -3,6 +3,7 @@ stages:
     cmd: python -m src.training.download_data
     deps:
       - src/training/download_data.py
+      - conf/config.yaml
     outs:
       - data/raw
 
@@ -10,6 +11,7 @@ stages:
     cmd: python -m src.training.process_data
     deps:
       - src/training/process_data.py
+      - conf/config.yaml
       - data/raw
     outs:
       - data/processed
@@ -18,11 +20,8 @@ stages:
     cmd: python -m src.training.train
     deps:
       - src/training/train.py
+      - conf/config.yaml
       - data/processed
-    params:
-      - conf/config.yaml:
-          - hyperparams
-          - model
     outs:
       - models/
 

@@ -6,6 +6,7 @@ from omegaconf import DictConfig
 from dotenv import load_dotenv
 import logging
 
+@hydra.main(version_base=None, config_path="../../conf", config_name="config")
 def download_titanic(cfg: DictConfig):
     # إعداد الـ logger
     logger = logging.getLogger(__name__)

@@ -1,0 +1,85 @@
+schema: '2.0'
+stages:
+  download:
+    cmd: python -m src.training.download_data
+    deps:
+    - path: conf/config.yaml
+      hash: md5
+      md5: 76dca1eadace28c577ca6f6bc071eeca
+      size: 526
+    - path: src/training/download_data.py
+      hash: md5
+      md5: a9b1ad96166e59c32c927b4add5c53e2
+      size: 1637
+    outs:
+    - path: data/raw
+      hash: md5
+      md5: 2e92afb04cc1088e96c965b66ea57b1b.dir
+      size: 93081
+      nfiles: 3
+  process:
+    cmd: python -m src.training.process_data
+    deps:
+    - path: conf/config.yaml
+      hash: md5
+      md5: 76dca1eadace28c577ca6f6bc071eeca
+      size: 526
+    - path: data/raw
+      hash: md5
+      md5: 2e92afb04cc1088e96c965b66ea57b1b.dir
+      size: 93081
+      nfiles: 3
+    - path: src/training/process_data.py
+      hash: md5
+      md5: 4f31da1cd5e850e6ef755faeda289aa3
+      size: 2570
+    outs:
+    - path: data/processed
+      hash: md5
+      md5: c608554e5ededfb091468099eb96aec3.dir
+      size: 21285
+      nfiles: 2
+  train:
+    cmd: python -m src.training.train
+    deps:
+    - path: conf/config.yaml
+      hash: md5
+      md5: 76dca1eadace28c577ca6f6bc071eeca
+      size: 526
+    - path: data/processed
+      hash: md5
+      md5: c608554e5ededfb091468099eb96aec3.dir
+      size: 21285
+      nfiles: 2
+    - path: src/training/train.py
+      hash: md5
+      md5: 642f4f9f6f0be5e6baa35372a1e4c5e3
+      size: 5536
+    outs:
+    - path: models/
+      hash: md5
+      md5: e11ad18975e959cbed760424f6c01aed.dir
+      size: 285247
+      nfiles: 3
+  evaluate:
+    cmd: python -m src.training.evaluate
+    deps:
+    - path: data/processed
+      hash: md5
+      md5: c608554e5ededfb091468099eb96aec3.dir
+      size: 21285
+      nfiles: 2
+    - path: models/
+      hash: md5
+      md5: e11ad18975e959cbed760424f6c01aed.dir
+      size: 285247
+      nfiles: 3
+    - path: src/training/evaluate.py
+      hash: md5
+      md5: 17021b7240b307106d43be301d2dcb17
+      size: 2600
+    outs:
+    - path: reports/xgb-cat/evaluation_report.json
+      hash: md5
+      md5: 935985af5072458fb3bbaa0905d319fe
+      size: 487

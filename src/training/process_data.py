@@ -59,6 +59,8 @@ def read_process_data(
     val_df = pd.DataFrame(X_val_proc)
     val_df[target_col] = y_val.values
 
+    os.makedirs(DESTINATION, exist_ok=True)
+    
     train_df.to_parquet(
         os.path.join(DESTINATION, f"{file_name}-train.parquet")
     )

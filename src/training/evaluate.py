@@ -63,8 +63,17 @@ def evaluate(X_test, y_test, model_name: str, logger) -> None:
     logger.info(f"Combined evaluation report saved at {report_file}")
 
 
-# if __name__ == "__main__":
-#     logging.basicConfig(level=logging.INFO)
-#     logger = logging.getLogger(__name__)
-#     X, y, X_test, y_test = encode_target_col("train", "Survived", "xgb", "cat", logger)
-#     evaluate(X_test, y_test, "xgb-cat", logger)
+if __name__ == "__main__":
+    import hydra
+    from omegaconf import DictConfig
+    import logging
+
+    @hydra.main(version_base=None, config_path="../../conf", config_name="config")
+    def main(cfg: DictConfig):
+        logging.basicConfig(level=logging.INFO)
+        logger = logging.getLogger(__name__)
+        from src.training.train import encode_target_col
+        X, y, X_test, y_test = encode_target_col("train", "Survived", "xgb", "cat", logger)
+        evaluate(X_test, y_test, "xgb-cat", logger)
+
+    main()
