@@ -15,7 +15,7 @@ def main(cfg: DictConfig) -> None:
     logger = ExecutorLogger("training")
     logger.info("Training started")
     
-    #download_titanic(cfg, logger)
+    download_titanic(cfg)
     read_process_data(cfg, "train", "PassengerId", "Survived", logger)
     X, y, X_test, y_test = encode_target_col("train", "Survived", "xgb", "cat", logger)
     trainer(cfg, X, y, "xgb-cat", logger)

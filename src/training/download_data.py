@@ -1,43 +1,49 @@
 import os
-import zipfile
-from kaggle.api.kaggle_api_extended import KaggleApi
-import kaggle
+import shutil
+import kagglehub
+import hydra
+from omegaconf import DictConfig
+from dotenv import load_dotenv
+import logging
 
-def download_titanic(config, logger) -> str:
-    logger.info("Initializing Kaggle API and authenticating...")
-
-    api = KaggleApi()
-    api.authenticate()
-
-    competition_name = config.data.competition 
-    raw_dir = config.data.raw_dir 
-    
-    os.makedirs(raw_dir, exist_ok=True)
-    
-    logger.info(f"Downloading files for: {competition_name}")
-    api.competition_download_files(competition_name, path=raw_dir)
-
-    zip_file_path = os.path.join(raw_dir, f"{competition_name}.zip")
-    
-    if os.path.exists(zip_file_path):
-        logger.info(f"Extracting {zip_file_path}...")
-        with zipfile.ZipFile(zip_file_path, "r") as zip_ref:
-            zip_ref.extractall(raw_dir)
-        
-        logger.info(f"Files extracted successfully to {raw_dir}")
-        
-        os.remove(zip_file_path)
-    else:
-        logger.error(f"Download failed! Zip file not found at {zip_file_path}")
-
-    return raw_dir
-
-if __name__ == "__main__":
-    import logging
-    from omegaconf import OmegaConf
-    
-    logging.basicConfig(level=logging.INFO)
+@hydra.main(version_base=None, config_path="../../conf", config_name="config")
+def download_titanic(cfg: DictConfig):
+    # إعداد الـ logger
     logger = logging.getLogger(__name__)
     
-    conf = OmegaConf.create({"data": {"competition": "titanic", "raw_dir": "data/raw"}})
-    download_titanic(conf, logger)
+    # تحميل بيانات Kaggle
+    download_titanic_data(cfg, logger)
+
+def download_titanic_data(cfg: DictConfig, logger) -> str:
+    logger.info(f"Downloading {cfg.data.competition_name} dataset from Kaggle...")
+    load_dotenv()
+
+    # الـ Credentials من ملف الـ .env
+    os.environ["KAGGLE_USERNAME"] = os.getenv("KAGGLE_USERNAME")
+    os.environ["KAGGLE_KEY"] = os.getenv("KAGGLE_API_TOKEN")
+
+    # تحميل الداتا لمكان الـ cache
+    path = kagglehub.competition_download(cfg.data.competition_name)
+
+    files = os.listdir(path)
+    csv_files = [f for f in files if f.endswith(".csv")]
+
+    if not csv_files:
+        csv_files = files
+
+    # استخدام raw_dir من الـ YAML
+    raw_data_dir = cfg.data.raw_dir
+    os.makedirs(raw_data_dir, exist_ok=True)
+
+    for csv_file in csv_files:
+        source_file = os.path.join(path, csv_file)
+        # المسار النهائي: data/raw/train.csv مثلاً
+        destination = os.path.join(raw_data_dir, csv_file)
+        shutil.copy(source_file, destination)
+        logger.info(f"Copied {csv_file} to {destination}")
+
+    logger.info(f"Dataset downloaded and copied to {raw_data_dir}")
+    return raw_data_dir
+
+if __name__ == "__main__":
+    download_titanic()

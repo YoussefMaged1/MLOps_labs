@@ -2,7 +2,7 @@
 data:
   raw_dir: "data/raw"
   processed_dir: "data/processed"
-  competition: "titanic"
+  competition_name: "titanic"
 
 model:
   name: "xgb-cat"
