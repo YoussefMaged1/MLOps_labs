@@ -2,3 +2,4 @@
     remote = origin
 ['remote "origin"']
     url = https://dagshub.com/youssef.maged237/MLOps_labs.dvc
+    auth = basic

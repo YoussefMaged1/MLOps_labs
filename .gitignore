@@ -194,3 +194,4 @@ reports/*/*.png
 reports/*/*.pdf
 reports/*/*.html
 reports/*/*.txt
+/models
