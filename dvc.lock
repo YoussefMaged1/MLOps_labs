@@ -58,8 +58,8 @@ stages:
     outs:
     - path: models/
       hash: md5
-      md5: a324eb2a08c9843fb2e261447be1ef8e.dir
-      size: 13040978
+      md5: 9f95f4c97c4d238743b37a66a0d9c046.dir
+      size: 894490
       nfiles: 3
   evaluate:
     cmd: python -m src.training.evaluate
@@ -71,8 +71,8 @@ stages:
       nfiles: 2
     - path: models/
       hash: md5
-      md5: a324eb2a08c9843fb2e261447be1ef8e.dir
-      size: 13040978
+      md5: 9f95f4c97c4d238743b37a66a0d9c046.dir
+      size: 894490
       nfiles: 3
     - path: src/training/evaluate.py
       hash: md5
@@ -81,5 +81,5 @@ stages:
     outs:
     - path: reports/xgb-cat/evaluation_report.json
       hash: md5
-      md5: e5afcb8ce88ec5a1f1e84e2cd1c5736a
-      size: 496
+      md5: 7634772b5372ae8bf40d639b350bfdde
+      size: 483
