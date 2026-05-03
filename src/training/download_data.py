@@ -3,6 +3,7 @@ import shutil
 import kagglehub
 import hydra
 from omegaconf import DictConfig
+from hydra.utils import get_original_cwd
 from dotenv import load_dotenv
 import logging
 
@@ -31,8 +32,7 @@ def download_titanic_data(cfg: DictConfig, logger) -> str:
     if not csv_files:
         csv_files = files
 
-    # استخدام raw_dir من الـ YAML
-    raw_data_dir = cfg.data.raw_dir
+    raw_data_dir = os.path.join(get_original_cwd(), cfg.data.raw_dir)
     os.makedirs(raw_data_dir, exist_ok=True)
 
     for csv_file in csv_files:

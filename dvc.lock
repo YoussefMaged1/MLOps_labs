@@ -5,12 +5,12 @@ stages:
     deps:
     - path: conf/config.yaml
       hash: md5
-      md5: 76dca1eadace28c577ca6f6bc071eeca
-      size: 526
+      md5: 86fd0459ce5f2520287b0be99428c6d2
+      size: 544
     - path: src/training/download_data.py
       hash: md5
-      md5: a9b1ad96166e59c32c927b4add5c53e2
-      size: 1637
+      md5: 1bcabee143bf264650d801720ee4541f
+      size: 1666
     outs:
     - path: data/raw
       hash: md5
@@ -22,8 +22,8 @@ stages:
     deps:
     - path: conf/config.yaml
       hash: md5
-      md5: 76dca1eadace28c577ca6f6bc071eeca
-      size: 526
+      md5: 86fd0459ce5f2520287b0be99428c6d2
+      size: 544
     - path: data/raw
       hash: md5
       md5: 2e92afb04cc1088e96c965b66ea57b1b.dir
@@ -44,8 +44,8 @@ stages:
     deps:
     - path: conf/config.yaml
       hash: md5
-      md5: 76dca1eadace28c577ca6f6bc071eeca
-      size: 526
+      md5: 86fd0459ce5f2520287b0be99428c6d2
+      size: 544
     - path: data/processed
       hash: md5
       md5: c608554e5ededfb091468099eb96aec3.dir
@@ -58,8 +58,8 @@ stages:
     outs:
     - path: models/
       hash: md5
-      md5: 6f323663f4e92683076ea9679f93d0b9.dir
-      size: 13095742
+      md5: 7bada5c458afe02310cc0cf2a33c9e1f.dir
+      size: 402440
       nfiles: 3
   evaluate:
     cmd: python -m src.training.evaluate
@@ -71,8 +71,8 @@ stages:
       nfiles: 2
     - path: models/
       hash: md5
-      md5: 6f323663f4e92683076ea9679f93d0b9.dir
-      size: 13095742
+      md5: 7bada5c458afe02310cc0cf2a33c9e1f.dir
+      size: 402440
       nfiles: 3
     - path: src/training/evaluate.py
       hash: md5
@@ -81,5 +81,5 @@ stages:
     outs:
     - path: reports/xgb-cat/evaluation_report.json
       hash: md5
-      md5: 6105317e03893ef368c93b39da527dec
+      md5: 1682a341ee6b1a6fd64289ba3436817d
       size: 496
