@@ -6,6 +6,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
+import pickle
 
 def read_process_data(
     config,
@@ -52,6 +53,10 @@ def read_process_data(
     pipeline = Pipeline(steps=[("preprocessor", preprocessor)])
     X_train_proc = pipeline.fit_transform(X_train)
     X_val_proc = pipeline.transform(X_val)
+
+    os.makedirs(DESTINATION, exist_ok=True)
+    with open(os.path.join(DESTINATION, "preprocessing_pipeline.pkl"), "wb") as f:
+        pickle.dump(pipeline, f)
 
     train_df = pd.DataFrame(X_train_proc)
     train_df[target_col] = y_train.values
